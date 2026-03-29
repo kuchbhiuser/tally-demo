@@ -35,6 +35,22 @@ export function formatAnswerValue(answer?: ResponseFieldAnswer | null): string {
     return value.join(", ");
   }
   if (typeof value === "object") {
+    if ("fileName" in value && typeof value.fileName === "string") {
+      return value.fileName;
+    }
+    if ("paymentId" in value && typeof value.paymentId === "string") {
+      const amount = "amount" in value ? value.amount : undefined;
+      const currency = "currency" in value ? value.currency : undefined;
+      return [currency, amount].filter(Boolean).join(" ") || value.paymentId;
+    }
+    if ("from" in value || "to" in value) {
+      const from = typeof value.from === "string" ? value.from : "—";
+      const to = typeof value.to === "string" ? value.to : "—";
+      return `${from} → ${to}`;
+    }
+    if ("signatureDataUrl" in value) {
+      return "Signature captured";
+    }
     return JSON.stringify(value);
   }
   return String(value);
