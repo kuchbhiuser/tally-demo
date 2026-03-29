@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BlockPalette } from "../builder/BlockPalette";
 import { BlockInspector } from "../builder/BlockInspector";
 import { BuilderCanvas } from "../builder/BuilderCanvas";
@@ -10,6 +10,7 @@ import { editorStore } from "../stores/editor-store";
 import { workspaceStore } from "../stores/workspace-store";
 import { useStore } from "../lib/use-store";
 import type { BlockType } from "../domain/types";
+import { buildShareUrl } from "../lib/url-schema";
 
 export function BuilderPage({
   formId,
@@ -24,6 +25,7 @@ export function BuilderPage({
   const logic = useStore(editorStore, (state) => state.schema?.logic ?? []);
   const actions = editorStore.getState().actions;
   const workspaceActions = workspaceStore.getState().actions;
+  const [shareState, setShareState] = useState<"idle" | "copying" | "copied">("idle");
 
   const selectedBlock = useMemo(() => schema?.blocks.find((block) => block.id === selectedBlockId), [schema, selectedBlockId]);
 
@@ -45,6 +47,17 @@ export function BuilderPage({
 
   const insertBlock = (type: BlockType) => actions.insertBlock(type, selectedBlockId);
 
+  const copyShareLink = async () => {
+    if (!schema) {
+      return;
+    }
+    setShareState("copying");
+    const shareUrl = await buildShareUrl(window.location.href, schema);
+    await navigator.clipboard.writeText(shareUrl);
+    setShareState("copied");
+    window.setTimeout(() => setShareState("idle"), 1500);
+  };
+
   return (
     <div className="builder-layout">
       <aside className="builder-left">
@@ -61,6 +74,9 @@ export function BuilderPage({
               <Badge tone={isDirty ? "warning" : "neutral"}>{isDirty ? "Unsaved" : schema.status}</Badge>
               <button className="secondary-btn" type="button" onClick={() => actions.addLogicRule()}>Add logic</button>
               <button className="secondary-btn" type="button" onClick={() => onNavigate(`/form/${schema.id}`)}>Preview</button>
+              <button className="secondary-btn" type="button" onClick={() => void copyShareLink()}>
+                {shareState === "copying" ? "Copying..." : shareState === "copied" ? "Copied" : "Share"}
+              </button>
               <button className="primary-btn" type="button" onClick={() => onNavigate(`/results/${schema.id}`)}>Results</button>
             </div>
           }
