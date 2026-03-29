@@ -1,0 +1,17 @@
+{
+  "name": "TallyWeb",
+  "short_name": "TallyWeb",
+  "description": "Browser-only Tally.so style form builder.",
+  "start_url": "/tally-demo/",
+  "scope": "/tally-demo/",
+  "display": "standalone",
+  "background_color": "#f6f8f7",
+  "theme_color": "#0d6b5c",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
