@@ -263,6 +263,14 @@ function renderBlock(
         />
       ) : block.type === "number" ? (
         <input className="question-input" type="number" value={String(value ?? "")} onChange={(event) => onValue(Number(event.target.value))} />
+      ) : block.type === "email" ? (
+        <input className="question-input" type="email" value={String(value ?? "")} onChange={(event) => onValue(event.target.value)} />
+      ) : block.type === "phone" ? (
+        <input className="question-input" type="tel" value={String(value ?? "")} onChange={(event) => onValue(event.target.value)} />
+      ) : block.type === "website" ? (
+        <input className="question-input" type="url" value={String(value ?? "")} onChange={(event) => onValue(event.target.value)} />
+      ) : block.type === "date" ? (
+        <input className="question-input" type="date" value={String(value ?? "")} onChange={(event) => onValue(event.target.value)} />
       ) : block.type === "long_text" ? (
         <textarea className="question-input" rows={4} value={String(value ?? "")} onChange={(event) => onValue(event.target.value)} />
       ) : (

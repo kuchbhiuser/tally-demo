@@ -36,6 +36,16 @@ export function BlockInspector({
             Description
             <textarea rows={3} value={block.description ?? ""} onChange={(event) => onPatch({ description: event.target.value })} />
           </label>
+          {block.type === "statement" ? (
+            <label className="inline-field">
+              Statement copy
+              <textarea
+                rows={4}
+                value={String((block.config as { content?: string }).content ?? "")}
+                onChange={(event) => onPatch({ config: { ...(block.config as Record<string, unknown>), content: event.target.value } as Block["config"] })}
+              />
+            </label>
+          ) : null}
           <label className="inline-field">
             Page
             <select value={block.pageId} onChange={(event) => onPatch({ pageId: event.target.value })}>
@@ -58,6 +68,26 @@ export function BlockInspector({
             <input type="checkbox" checked={block.readOnly} onChange={(event) => onPatch({ readOnly: event.target.checked })} />
             Read only
           </label>
+          {"options" in block.config ? (
+            <div className="setting-field">
+              <span>Options</span>
+              <textarea
+                rows={4}
+                value={((block.config.options ?? []) as Array<{ label?: string }>)
+                  .map((option) => option.label ?? "")
+                  .join("\n")}
+                onChange={(event) => {
+                  const options = event.target.value
+                    .split("\n")
+                    .map((label) => label.trim())
+                    .filter(Boolean)
+                    .map((label) => ({ id: label.toLowerCase().replace(/\s+/g, "-"), label }));
+                  onPatch({ config: { ...(block.config as Record<string, unknown>), options } as Block["config"] });
+                }}
+                placeholder="One option per line"
+              />
+            </div>
+          ) : null}
           <div className="inspect-row"><span>Type</span><strong>{block.type}</strong></div>
           <div className="inspect-row"><span>Block ID</span><strong>{block.id}</strong></div>
           <div className="inspect-row"><span>Field key</span><strong>{block.fieldKey}</strong></div>

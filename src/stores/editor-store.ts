@@ -90,7 +90,17 @@ export const editorStore = createStore<EditorState>((set, get) => ({
     },
     updateBlock: (blockId: string, patch: Partial<Block>) => {
       const schema = getSchemaOrThrow();
-      const blocks = schema.blocks.map((block) => (block.id === blockId ? { ...block, ...patch } : block));
+      const blocks = schema.blocks.map((block) => {
+        if (block.id !== blockId) {
+          return block;
+        }
+
+        const nextBlock = { ...block, ...patch };
+        if (Object.prototype.hasOwnProperty.call(patch, "label") && patch.label && patch.label !== block.label) {
+          nextBlock.fieldKey = createFieldKey(String(patch.label), schema.blocks.filter((item) => item.id !== blockId).map((item) => item.fieldKey));
+        }
+        return nextBlock;
+      });
       pushSchema({ ...schema, blocks });
     },
     duplicateBlock: (blockId: string) => {
