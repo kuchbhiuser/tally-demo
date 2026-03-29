@@ -2,8 +2,10 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
+const BASE_PATH = '/tally-demo/';
+
 export default defineConfig({
-  base: '/tally-demo/',
+  base: BASE_PATH,
   plugins: [
     react(),
     VitePWA({
@@ -11,7 +13,7 @@ export default defineConfig({
       includeAssets: ['favicon.svg', 'mask-icon.svg'],
       manifest: false,
       workbox: {
-        navigateFallback: '/index.html'
+        navigateFallback: `${BASE_PATH}index.html`
       }
     })
   ],
