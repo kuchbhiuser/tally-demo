@@ -12,6 +12,9 @@ export type BlockType =
   | "paragraph"
   | "divider"
   | "page_break"
+  | "image"
+  | "video"
+  | "spacer"
   | "short_text"
   | "long_text"
   | "email"
@@ -82,6 +85,27 @@ export interface DividerConfig {
   style: "line" | "dots" | "thick";
   marginTop: number;
   marginBottom: number;
+}
+
+export interface ImageConfig {
+  src: string;
+  alt: string;
+  width: "small" | "medium" | "large" | "full";
+  alignment: "left" | "center" | "right";
+  caption?: string;
+  linkUrl?: string;
+}
+
+export interface VideoConfig {
+  src: string;
+  autoPlay: boolean;
+  showControls: boolean;
+  width: "medium" | "large" | "full";
+  aspectRatio: "16:9" | "4:3" | "1:1";
+}
+
+export interface SpacerConfig {
+  height: number;
 }
 
 export interface PageBreakConfig {
@@ -269,6 +293,9 @@ export type BlockConfigMap = {
   paragraph: ParagraphConfig;
   divider: DividerConfig;
   page_break: PageBreakConfig;
+  image: ImageConfig;
+  video: VideoConfig;
+  spacer: SpacerConfig;
   short_text: ShortTextConfig;
   long_text: LongTextConfig;
   email: EmailConfig;
@@ -535,4 +562,3 @@ export interface SchemaSourceResult {
   schema: FormSchema;
   source: "local" | "encoded" | "remote";
 }
-

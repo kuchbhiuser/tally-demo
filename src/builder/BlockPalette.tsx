@@ -1,7 +1,7 @@
 import type { BlockType } from "../domain/types";
 
 const groups: { title: string; items: BlockType[] }[] = [
-  { title: "Layout", items: ["heading", "paragraph", "divider", "page_break", "statement"] },
+  { title: "Layout", items: ["heading", "paragraph", "divider", "page_break", "image", "video", "spacer", "statement"] },
   {
     title: "Inputs",
     items: [

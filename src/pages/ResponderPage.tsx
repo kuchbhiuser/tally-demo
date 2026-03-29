@@ -197,6 +197,7 @@ function renderBlock(
   }
 
   const value = answers[block.fieldKey]?.value;
+  const config = block.config as any;
   const onValue = (nextValue: ResponseFieldAnswer["value"]) => {
     setAnswers((current) => ({
       ...current,
@@ -261,6 +262,107 @@ function renderBlock(
           value={Number(value ?? 0)}
           onChange={(event) => onValue(Number(event.target.value))}
         />
+      ) : block.type === "time" ? (
+        <input className="question-input" type="time" value={String(value ?? "")} onChange={(event) => onValue(event.target.value)} />
+      ) : block.type === "date_range" ? (
+        <div className="choice-list">
+          <input
+            className="question-input"
+            type="date"
+            value={String((value as { from?: string } | undefined)?.from ?? "")}
+            onChange={(event) => onValue({ ...(typeof value === "object" && value ? value : {}), from: event.target.value, to: (value as { to?: string } | undefined)?.to ?? "" })}
+          />
+          <input
+            className="question-input"
+            type="date"
+            value={String((value as { to?: string } | undefined)?.to ?? "")}
+            onChange={(event) => onValue({ ...(typeof value === "object" && value ? value : {}), from: (value as { from?: string } | undefined)?.from ?? "", to: event.target.value })}
+          />
+        </div>
+      ) : block.type === "ranking" ? (
+        <textarea
+          className="question-input"
+          rows={4}
+          value={Array.isArray(value) ? value.join("\n") : ""}
+          onChange={(event) => onValue(event.target.value.split("\n").map((item) => item.trim()).filter(Boolean))}
+          placeholder="Enter your ranking, one item per line"
+        />
+      ) : block.type === "matrix" ? (
+        <textarea
+          className="question-input"
+          rows={4}
+          value={typeof value === "string" ? value : ""}
+          onChange={(event) => onValue(event.target.value)}
+          placeholder="Matrix response"
+        />
+      ) : block.type === "input_table" ? (
+        <textarea
+          className="question-input"
+          rows={4}
+          value={typeof value === "string" ? value : ""}
+          onChange={(event) => onValue(event.target.value)}
+          placeholder="Enter rows for the table"
+        />
+      ) : block.type === "file_upload" ? (
+        <input
+          className="question-input"
+          type="file"
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            if (!file) {
+              onValue(null);
+              return;
+            }
+            onValue({ fileName: file.name, fileSize: file.size, fileType: file.type });
+          }}
+        />
+      ) : block.type === "signature" ? (
+        <textarea
+          className="question-input"
+          rows={4}
+          value={typeof value === "string" ? value : ""}
+          onChange={(event) => onValue(event.target.value)}
+          placeholder="Type a signature preview for now"
+        />
+      ) : block.type === "payment" ? (
+        <div className="statement-card">
+          <p className="statement-copy">
+            {config.description || "Payment block"}
+          </p>
+          <button
+            className="primary-btn"
+            type="button"
+            onClick={() => onValue({ amount: config.amount ?? 0, currency: config.currency, paymentId: `pay_${Date.now()}` })}
+          >
+            Proceed to payment
+          </button>
+        </div>
+      ) : block.type === "calculated_field" ? (
+        <div className="statement-card">
+          <p className="statement-copy">{config.formula || "Calculated field"}</p>
+          <input className="question-input" type="text" value={String(value ?? "")} readOnly />
+        </div>
+      ) : block.type === "image" ? (
+        <div className="statement-card">
+          <p className="statement-copy">{config.alt || block.label}</p>
+          {config.src ? <img src={config.src} alt={config.alt || block.label} style={{ maxWidth: "100%", borderRadius: "16px" }} /> : null}
+        </div>
+      ) : block.type === "video" ? (
+        <div className="statement-card">
+          {config.src ? (
+            <iframe
+              title={block.label}
+              src={embedVideoUrl(config.src)}
+              style={{ width: "100%", minHeight: "240px", border: 0, borderRadius: "16px" }}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          ) : (
+            <p className="statement-copy">Video embed</p>
+          )}
+        </div>
+      ) : block.type === "spacer" ? (
+        <div style={{ height: 32 }} />
       ) : block.type === "number" ? (
         <input className="question-input" type="number" value={String(value ?? "")} onChange={(event) => onValue(Number(event.target.value))} />
       ) : block.type === "email" ? (
@@ -285,6 +387,22 @@ function getChoiceOptions(block: Block): Array<{ label: string }> {
     return ((block.config as { options?: { label?: string }[] }).options ?? []).map((option) => ({ label: option.label ?? "Option" }));
   }
   return [];
+}
+
+function embedVideoUrl(src: string): string {
+  try {
+    const url = new URL(src);
+    if (url.hostname.includes("youtube.com")) {
+      const id = url.searchParams.get("v");
+      return id ? `https://www.youtube.com/embed/${id}` : src;
+    }
+    if (url.hostname === "youtu.be") {
+      return `https://www.youtube.com/embed/${url.pathname.replace("/", "")}`;
+    }
+    return src;
+  } catch {
+    return src;
+  }
 }
 
 async function loadSharedSchemaFromHash(): Promise<FormSchema | null> {

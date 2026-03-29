@@ -1,7 +1,30 @@
-import type { Block, Page } from "../domain/types";
+import type { Block, BlockType, Page } from "../domain/types";
 import { EmptyState } from "../components/EmptyState";
 import { SectionCard } from "../components/SectionCard";
 import { editorStore } from "../stores/editor-store";
+
+const SIMPLE_CONFIG_BLOCKS: BlockType[] = [
+  "heading",
+  "paragraph",
+  "divider",
+  "page_break",
+  "short_text",
+  "long_text",
+  "email",
+  "phone",
+  "number",
+  "website",
+  "single_choice",
+  "multiple_choice",
+  "dropdown",
+  "rating",
+  "opinion_scale",
+  "date",
+  "time",
+  "date_range",
+  "hidden_field",
+  "statement"
+];
 
 export function BlockInspector({
   block,
@@ -85,6 +108,24 @@ export function BlockInspector({
                   onPatch({ config: { ...(block.config as Record<string, unknown>), options } as Block["config"] });
                 }}
                 placeholder="One option per line"
+              />
+            </div>
+          ) : null}
+          {!SIMPLE_CONFIG_BLOCKS.includes(block.type) ? (
+            <div className="setting-field">
+              <span>Advanced config (JSON)</span>
+              <textarea
+                rows={8}
+                value={JSON.stringify(block.config, null, 2)}
+                onChange={(event) => {
+                  try {
+                    const parsed = JSON.parse(event.target.value) as Block["config"];
+                    onPatch({ config: parsed });
+                  } catch {
+                    // Keep the last valid config until the JSON is valid again.
+                  }
+                }}
+                spellCheck={false}
               />
             </div>
           ) : null}
