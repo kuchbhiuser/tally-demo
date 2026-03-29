@@ -24,7 +24,7 @@ export function Sidebar({
         <div>
           <div className="eyebrow">Workspace</div>
           <h1>{settings.displayName}</h1>
-          <p className="sidebar-subtitle">Browser-only forms for GitHub Pages</p>
+          <p className="sidebar-subtitle">Browser-only workspace ready for GitHub Pages</p>
         </div>
       </div>
 
@@ -61,10 +61,10 @@ export function Sidebar({
       <section className="side-section sidebar-note">
         <div className="section-title">Coverage</div>
         <ul>
-          <li>Builder and preview</li>
-          <li>Local response flow</li>
-          <li>Results and exports</li>
-          <li>GitHub Pages ready</li>
+          <li>Workspace dashboard</li>
+          <li>Builder and preview shell</li>
+          <li>Results and exports shell</li>
+          <li>GitHub Pages deployment</li>
         </ul>
       </section>
     </aside>

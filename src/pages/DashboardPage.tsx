@@ -24,7 +24,7 @@ export function DashboardPage({
         <div className="dashboard-hero">
           <div>
             <p className="section-copy">
-              Create forms locally, preview them instantly, and keep the whole workspace deployable on GitHub Pages with no backend.
+              Create forms locally, preview them instantly, and keep the workspace deployable on GitHub Pages with no backend.
             </p>
             <div className="btn-row">
               <button className="primary-btn" type="button" onClick={onCreate}>Create form</button>
